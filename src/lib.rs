@@ -1,44 +1,30 @@
+use anyhow::Context as _;
+use dotenv::dotenv;
 use std::env;
-use tokio::stream::StreamExt as _;
-use twitchchat::{events, messages, Control, Dispatcher, IntoChannel, Runner, Status, Writer};
+use twitchchat::UserConfig;
 
-pub struct TwitchChatWrapper {}
+pub fn run() -> anyhow::Result<()> {
+    dotenv().ok();
+    let user_config = get_user_config()?;
+    let channel = get_channel()?;
+    Ok(())
+}
 
-impl TwitchChatWrapper {
-    pub fn new() -> TwitchChatWrapper {
-        dotenv::dotenv().ok();
-        TwitchChatWrapper {}
-    }
+fn get_user_config() -> anyhow::Result<UserConfig> {
+    let twitch_name = get_environment_variable("TWITCH_NICKNAME")?;
+    let twitch_password = get_environment_variable("TWITCH_PASSWORD")?;
+    let config = UserConfig::builder()
+        .name(twitch_name)
+        .token(twitch_password)
+        .enable_all_capabilities()
+        .build()?;
+    Ok(config)
+}
 
-    pub async fn run(&self) {
-        let dispatcher = Dispatcher::new();
-        let (mut runner, mut control) = Runner::new(dispatcher.clone());
+fn get_environment_variable(name: &str) -> anyhow::Result<String> {
+    env::var(name).with_context(|| format!("Environment variable {} doesn't exist", name))
+}
 
-        let connector = twitchchat::Connector::new(|| async move {
-            let twitch_nickname = env::var("TWITCH_NICKNAME").unwrap();
-            let twitch_password = env::var("TWITCH_PASSWORD").unwrap();
-            twitchchat::native_tls::connect_easy(&twitch_nickname, &twitch_password).await
-        });
-        let done = runner.run_to_completion(connector).await;
-
-        self.start(dispatcher, "brookzerker", control.writer());
-    }
-
-    async fn start(&self, dispatcher: Dispatcher, channel: impl IntoChannel, writer: &mut Writer) {
-        // subscribe to the events we're interested in
-        let mut events = dispatcher.subscribe::<events::Privmsg>();
-
-        // and wait for a specific event (blocks the current task)
-        let ready = dispatcher.wait_for::<events::IrcReady>().await.unwrap();
-        eprintln!("connected! our name is: {}", ready.nickname);
-
-        // and then join a channel
-        eprintln!("joining our channel");
-        writer.join(channel).await.unwrap();
-
-        // and then our 'main loop'
-        while let Some(msg) = events.next().await {
-            dbg!(msg);
-        }
-    }
+fn get_channel() -> anyhow::Result<String> {
+    get_environment_variable("TWITCH_CHANNEL")
 }
