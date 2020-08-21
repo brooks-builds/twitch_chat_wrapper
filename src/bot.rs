@@ -1,13 +1,13 @@
-use twitchchat::{runner::{AsyncRunner, Status}, UserConfig, messages::AllCommands};
+use twitchchat::{runner::{AsyncRunner, Status}, UserConfig, messages::{AllCommands}};
 use std::sync::mpsc::{Receiver, Sender};
 use std::thread;
-use super::Result;
+use super::{Result, ChatMessage};
 
 pub struct Bot;
 
 impl Bot {
     // run the bot until its done
-    pub async fn run(&self, user_config: &UserConfig, channels: &[String], messages_for_chat: Receiver<String>, send_incomming_chat_message: Sender<String>) -> Result<()> {
+    pub async fn run(&self, user_config: &UserConfig, channels: &[String], messages_for_chat: Receiver<String>, send_incomming_chat_message: Sender<ChatMessage>) -> Result<()> {
         let connector = twitchchat::connector::smol::Connector::twitch();
 
         let mut runner = AsyncRunner::connect(connector, user_config).await?;
@@ -23,7 +23,7 @@ impl Bot {
     }
 
     // the main loop of the bot
-    async fn main_loop(&self, runner: &mut AsyncRunner, messages_for_chat: Receiver<String>, send_incomming_chat_message: Sender<String>) -> Result<()> {
+    async fn main_loop(&self, runner: &mut AsyncRunner, messages_for_chat: Receiver<String>, send_incomming_chat_message: Sender<ChatMessage>) -> Result<()> {
         // this is clonable, but we can just share it via &mut
         // this is rate-limited writer
         let mut writer = runner.writer();
@@ -46,7 +46,7 @@ impl Bot {
                 // if we get a Privmsg (you'll get an AllCommands enum for all messages received)
                 Status::Message(AllCommands::Privmsg(pm)) => {
                     // see if its a command and do stuff with it
-                    send_incomming_chat_message.send(pm.data().to_owned())?;
+                    send_incomming_chat_message.send(ChatMessage::new(pm))?;
                 }
                 // stop if we're stopping
                 Status::Quit | Status::Eof => break,

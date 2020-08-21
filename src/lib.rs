@@ -1,4 +1,9 @@
+pub mod chat_message;
+pub use chat_message::ChatMessage;
+
 // note this uses `smol`. you can use `tokio` or `async_std` or `async_io` if you prefer.
+
+
 use eyre::Result;
 
 use std::sync::mpsc::{Receiver, Sender};
@@ -11,7 +16,7 @@ use twitchchat::{
 mod bot;
 use bot::Bot;
 
-pub fn run(receive_for_chat: Receiver<String>, send_incomming_chat_message: Sender<String>) -> Result<()> {
+pub fn run(receive_for_chat: Receiver<String>, send_incomming_chat_message: Sender<ChatMessage>) -> Result<()> {
     dotenv::dotenv().ok();
     // you'll need a user configuration
     let user_config = get_user_config()?;
