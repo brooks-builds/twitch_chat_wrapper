@@ -9,5 +9,5 @@ edition = "2018"
 [dependencies]
 twitchchat = { path = "../twitchchat", features=["smol"] }
 dotenv = "0.15.0"
-anyhow = "1.0.32"
+eyre = "0.6.0"
 smol = "0.3.3"

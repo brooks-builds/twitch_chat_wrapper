@@ -1,7 +1,7 @@
 // note this uses `smol`. you can use `tokio` or `async_std` or `async_io` if you prefer.
-use anyhow::Context as _;
+use eyre::Result;
 
-use std::sync::mpsc::{channel, Receiver};
+use std::sync::mpsc::{Receiver, Sender};
 
 // extensions to the Privmsg type
 use twitchchat::{
@@ -11,7 +11,7 @@ use twitchchat::{
 mod bot;
 use bot::Bot;
 
-pub fn run(receive_for_chat: Receiver<String>) -> anyhow::Result<()> {
+pub fn run(receive_for_chat: Receiver<String>, send_incomming_chat_message: Sender<String>) -> Result<()> {
     dotenv::dotenv().ok();
     // you'll need a user configuration
     let user_config = get_user_config()?;
@@ -21,16 +21,17 @@ pub fn run(receive_for_chat: Receiver<String>) -> anyhow::Result<()> {
     let bot = Bot;
 
     // run the bot in the executor
-    smol::run(async move { bot.run(&user_config, &channels, receive_for_chat).await })
+    smol::run(async move { bot.run(&user_config, &channels, receive_for_chat, send_incomming_chat_message).await })
 }
 
 // some helpers for the demo
-fn get_env_var(key: &str) -> anyhow::Result<String> {
-    std::env::var(key).with_context(|| format!("please set `{}`", key))
+fn get_env_var(key: &str) -> Result<String> {
+    let my_var = std::env::var(key)?;
+    Ok(my_var)
 }
 
 // channels can be either in the form of '#museun' or 'museun'. the crate will internally add the missing #
-fn channels_to_join() -> anyhow::Result<Vec<String>> {
+fn channels_to_join() -> Result<Vec<String>> {
     let channels = get_env_var("TWITCH_CHANNEL")?
         .split(',')
         .map(ToString::to_string)
@@ -38,7 +39,7 @@ fn channels_to_join() -> anyhow::Result<Vec<String>> {
     Ok(channels)
 }
 
-fn get_user_config() -> anyhow::Result<twitchchat::UserConfig> {
+fn get_user_config() -> Result<twitchchat::UserConfig> {
     let name = get_env_var("TWITCH_NAME")?;
     let token = get_env_var("TWITCH_TOKEN")?;
 
