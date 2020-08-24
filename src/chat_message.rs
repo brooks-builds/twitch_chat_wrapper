@@ -11,7 +11,6 @@ pub struct ChatMessage {
 
 impl ChatMessage {
     pub fn new(raw_message: Privmsg) -> ChatMessage {
-        dbg!(&raw_message);
         let name = raw_message.name().to_owned();
         let message = raw_message.data().to_owned();
         let color_rgb = raw_message
