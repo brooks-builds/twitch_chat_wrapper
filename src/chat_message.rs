@@ -2,11 +2,11 @@ use twitchchat::messages::Privmsg;
 
 #[derive(Debug)]
 pub struct ChatMessage {
-    message: String,
-    name: String,
-    color_rgb: (u8, u8, u8),
-    display_name: Option<String>,
-    subscriber: bool
+    pub message: String,
+    pub name: String,
+    pub color_rgb: (u8, u8, u8),
+    pub display_name: Option<String>,
+    pub subscriber: bool,
 }
 
 impl ChatMessage {
@@ -24,7 +24,7 @@ impl ChatMessage {
             message,
             color_rgb,
             display_name,
-            subscriber
+            subscriber,
         }
     }
 
