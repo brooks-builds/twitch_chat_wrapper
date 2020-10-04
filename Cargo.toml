@@ -3,11 +3,12 @@ name = "twitch_chat_wrapper"
 version = "0.1.1"
 authors = ["Brooks Patton <brooks@brookzerker.com>"]
 edition = "2018"
+description = "Wraps around the Twitchchat crate by Museun for projects built that need Twitchchat integration easily."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-twitchchat = { path="../twitchchat", features=["smol"] }
+twitchchat = { version="0.14.4", features=["smol", "async"] }
 dotenv = "0.15.0"
 eyre = "0.6.0"
 smol = "0.3.3"

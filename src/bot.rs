@@ -2,7 +2,7 @@ use super::{ChatMessage, Result};
 use std::sync::mpsc::{Receiver, Sender};
 use std::thread;
 use twitchchat::{
-    messages::AllCommands,
+    messages::Commands,
     runner::{AsyncRunner, Status},
     UserConfig,
 };
@@ -17,7 +17,7 @@ impl Bot {
         messages_for_chat: Receiver<String>,
         send_incomming_chat_message: Sender<ChatMessage>,
     ) -> Result<()> {
-        let connector = twitchchat::connector::smol::Connector::twitch();
+        let connector = twitchchat::connector::smol::Connector::twitch()?;
 
         let mut runner = AsyncRunner::connect(connector, user_config).await?;
 
@@ -56,7 +56,7 @@ impl Bot {
 
         loop {
             match runner.next_message().await? {
-                Status::Message(AllCommands::Privmsg(raw_message)) => {
+                Status::Message(Commands::Privmsg(raw_message)) => {
                     send_incomming_chat_message.send(ChatMessage::new(raw_message))?;
                 }
                 Status::Quit | Status::Eof => break,
