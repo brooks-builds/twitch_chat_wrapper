@@ -1,6 +1,6 @@
 [package]
 name = "twitch_chat_wrapper"
-version = "0.2.1"
+version = "0.2.0"
 authors = ["Brooks Patton <brooks@brookzerker.com>"]
 edition = "2018"
 description = "Wraps around the Twitchchat crate by Museun for projects built that need Twitchchat integration easily."
