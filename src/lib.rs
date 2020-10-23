@@ -5,6 +5,7 @@ use bot::Bot;
 pub use chat_message::ChatMessage;
 use eyre::Result;
 use std::sync::mpsc::{Receiver, Sender};
+pub use twitchchat;
 use twitchchat::UserConfig;
 
 pub fn run(
