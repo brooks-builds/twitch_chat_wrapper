@@ -91,18 +91,19 @@ impl<'a> From<Privmsg<'a>> for ChatMessage {
     fn from(raw_message: Privmsg) -> Self {
         let name = raw_message.name().to_owned();
         let message = raw_message.data().to_owned();
-        let (r, g, b) = raw_message
+        let color = raw_message
             .color()
-            .map_or((0, 0, 0), |color| (color.rgb.0, color.rgb.1, color.rgb.2));
+            .map(|color| ColorRgb(color.rgb.0, color.rgb.1, color.rgb.2))
+            .unwrap_or_default();
         let display_name = raw_message.display_name().map(|name| name.to_owned());
         let subscriber = raw_message.is_subscriber();
 
-        ChatMessage {
+        ChatMessage::new(
             name,
             message,
-            color: ColorRgb(r, g, b),
+            color,
             display_name,
             subscriber,
-        }
+        )
     }
 }
