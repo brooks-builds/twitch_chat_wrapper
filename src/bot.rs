@@ -57,7 +57,7 @@ impl Bot {
         loop {
             match runner.next_message().await? {
                 Status::Message(Commands::Privmsg(raw_message)) => {
-                    send_incomming_chat_message.send(ChatMessage::new(raw_message))?;
+                    send_incomming_chat_message.send(raw_message.into())?;
                 }
                 Status::Quit | Status::Eof => break,
                 Status::Message(_) => {
