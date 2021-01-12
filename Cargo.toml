@@ -10,6 +10,5 @@ license = "MIT"
 
 [dependencies]
 twitchchat = { version="0.14.4", features=["smol", "async"] }
-dotenv = "0.15.0"
 eyre = "0.6.0"
 smol = "0.3.3"
