@@ -1,5 +1,3 @@
-use twitchchat::messages::Privmsg;
-
 #[derive(Debug)]
 pub struct ChatMessage {
     pub message: String,
@@ -10,21 +8,13 @@ pub struct ChatMessage {
 }
 
 impl ChatMessage {
-    pub fn new(raw_message: Privmsg) -> ChatMessage {
-        let name = raw_message.name().to_owned();
-        let message = raw_message.data().to_owned();
-        let color_rgb = raw_message
-            .color()
-            .map_or((0, 0, 0), |color| (color.rgb.0, color.rgb.1, color.rgb.2));
-        let display_name = raw_message.display_name().map(|name| name.to_owned());
-        let subscriber = raw_message.is_subscriber();
-
+    pub fn new() -> ChatMessage {
         ChatMessage {
-            name,
-            message,
-            color_rgb,
-            display_name,
-            subscriber,
+            name: "someone".into(),
+            message: "I am a message".into(),
+            color_rgb: (200, 200, 200),
+            display_name: Some("Not a bot".into()),
+            subscriber: false,
         }
     }
 
