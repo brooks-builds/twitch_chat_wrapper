@@ -8,12 +8,12 @@ pub struct ChatMessage {
 }
 
 impl ChatMessage {
-    pub fn new() -> ChatMessage {
+    pub fn new(name: String, display_name: Option<String>, message: String) -> ChatMessage {
         ChatMessage {
-            name: "someone".into(),
-            message: "I am a message".into(),
-            color_rgb: (200, 200, 200),
-            display_name: Some("Not a bot".into()),
+            name,
+            message,
+            color_rgb: (255, 255, 255),
+            display_name,
             subscriber: false,
         }
     }
