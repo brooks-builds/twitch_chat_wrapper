@@ -9,12 +9,13 @@ pub use twitchchat;
 use twitchchat::UserConfig;
 
 pub fn run(
+    name: String,
+    token: String,
+    channels: Vec<String>,
     receive_for_chat: Receiver<String>,
     send_incomming_chat_message: Sender<ChatMessage>,
 ) -> Result<()> {
-    dotenv::dotenv().ok();
-    let user_config = get_user_config()?;
-    let channels = channels_to_join()?;
+    let user_config = get_user_config(name, token)?;
     let bot = Bot;
 
     // run the bot in the executor
@@ -29,23 +30,7 @@ pub fn run(
     })
 }
 
-fn get_env_var(key: &str) -> Result<String> {
-    let my_var = std::env::var(key)?;
-    Ok(my_var)
-}
-
-fn channels_to_join() -> Result<Vec<String>> {
-    let channels = get_env_var("TWITCH_CHANNEL")?
-        .split(',')
-        .map(ToString::to_string)
-        .collect();
-    Ok(channels)
-}
-
-fn get_user_config() -> Result<twitchchat::UserConfig> {
-    let name = get_env_var("TWITCH_NAME")?;
-    let token = get_env_var("TWITCH_TOKEN")?;
-
+fn get_user_config(name: String, token: String) -> Result<twitchchat::UserConfig> {
     let config = UserConfig::builder()
         .name(name)
         .token(token)
